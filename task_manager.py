@@ -263,14 +263,14 @@ def task_overview_creation():
 
     # Print results to the console.
     if len(task_list) == 0:
-        print(f"\n=========== TASK OVERVIEW ===========\n")
+        print(f"\n=========== TASK OVERVIEW ===========\n\n")
         print("No tasks registered.")
-        print("\n============= TASK  END =============")
+        print("\n\n============= TASK  END =============")
         with open("task_overview.txt", "w") as task_overview_file:
             task_overview_file.write(f"No registered tasks.")
         return
     else:
-        print(f"\n=========== TASK OVERVIEW ===========\n")
+        print(f"\n=========== TASK OVERVIEW ===========\n\n")
         print(f"Task List Overview:")
         print(f"    Total Tasks:            {total_tasks}")
         print(f"    Completed tasks:        {completed_tasks}")
@@ -411,7 +411,7 @@ def user_overview_creation():
             print(user)
     for user in no_task_list:
         print(f"\n  There are no tasks allocated to {user}.")
-    print("\n============= USER  END =============")
+    print("\n\n============= USER  END =============")
 
     # Create reference file
     with open("user_overview.txt", "w") as user_overview_file:
