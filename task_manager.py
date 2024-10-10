@@ -16,11 +16,13 @@
 import os
 import sys
 
-import Task, User
+from Task import Task
+from User import User
 from datetime import datetime, date
 
 DATETIME_STRING_FORMAT = "%Y-%m-%d"
 
+print(Task.test_print())
 
 # Create a new task
 def add_task():
@@ -48,7 +50,7 @@ def add_task():
         new_task_id = 0
 
     # Append new task to task list and update the task file.
-    task_list.append(Task.Task(new_task_id, owner, program_user, title, description, date.today(), due_date, "No"))
+    task_list.append(Task(new_task_id, owner, program_user, title, description, date.today(), due_date, "No"))
     update_task_file()
     print("\n-> Task added successfully.")
     return
@@ -152,14 +154,14 @@ def exit_program():
 def generate_task_list():
     with open("tasks.txt", 'r') as file:
         for i, task in enumerate(file):
-            task_list.append(Task.Task(*task.split(";")))
+            task_list.append(Task(*task.split(";")))
     return
 
 # Generate a list of users
 def generate_user_list():
     with open("users.txt", 'r') as user_file:
         for i, user in enumerate(user_file):
-            user_list.append(User.User(*user.split(";")))
+            user_list.append(User(*user.split(";")))
     
     return
 
@@ -220,7 +222,7 @@ def reg_user():
         # Check if the new password and confirmed password are the same.
         if new_password == confirm_password:
             # write new user to user list and update user file    
-            user_list.append(User.User(new_username,new_password,0,0))
+            user_list.append(User(new_username,new_password,0,0))
             update_user_file()
             break
         else:

@@ -1,0 +1,8 @@
+Task List Overview:
+    Total Tasks:            1
+    Completed tasks:        0
+    Incomplete Tasks:       1
+    Overdue tasks:          0
+    Percentage:
+        Incomplete:         100%
+        Remaining, overdue: 0%

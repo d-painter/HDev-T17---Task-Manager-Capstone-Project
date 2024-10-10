@@ -4,9 +4,15 @@ DATETIME_STRING_FORMAT = "%Y-%m-%d"
 
 
 class Task:
+    """Task class"""
 
-    # Placeholder for whether a task is overdue
+    @staticmethod
+    def test_print():
+        return "task test print"
+
+    # Set whether a task is overdue to false
     is_overdue = False
+
 
     def __init__(self, task_id, owner, created_by, title, description, date_raised, date_due, is_complete):
         self.task_id = int(task_id)
@@ -18,8 +24,8 @@ class Task:
         self.date_due = date_due
         self.is_complete = is_complete.strip("\n")
 
-    # Task overview
     def __str__(self) -> str:
+        """Returns task overview"""
         return f"""Task Id:     {self.task_id}
 Task Title:  {self.title}
 Task Owner:  {self.owner}
