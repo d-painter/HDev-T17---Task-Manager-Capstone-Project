@@ -149,13 +149,6 @@ def exit_program():
         else:
             sys.exit("\n-> Program closed.\n")
 
-# Generate a list of tasks
-def generate_task_list():
-    with open("tasks.txt", 'r') as file:
-        for i, task in enumerate(file):
-            task_list.append(Task(*task.split(";")))
-    return
-
 # Generate a list of users
 def generate_user_list():
     with open("users.txt", 'r') as user_file:
