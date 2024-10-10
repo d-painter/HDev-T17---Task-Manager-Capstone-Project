@@ -1,13 +1,5 @@
 General Overview
-    Registered Users:       2
-    Tasks Created:          2
+    Registered Users:       1
+    Tasks Created:          1
 
-admin Overview:
-    Total user tasks:       1
-    Total completed tasks:  0
-    Overdue tasks:          0
-    Percentage 
-        To complete:        100%
-        Remaining, overdue: 0%
-
-   There are no tasks allocated to new user 1.
+   There are no tasks allocated to admin.

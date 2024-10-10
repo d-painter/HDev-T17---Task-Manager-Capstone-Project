@@ -161,7 +161,6 @@ def generate_user_list():
     with open("users.txt", 'r') as user_file:
         for i, user in enumerate(user_file):
             user_list.append(User(*user.split(";")))
-    
     return
 
 # Get date input and validate the response
@@ -176,9 +175,9 @@ def get_date_input(message):
             print("\n-> Invalid datetime format. Please use the format specified.\n")
     return task_due_date
 
+
 # Handle login process.
 def login():
-
     check_if_file_exists("users.txt")
     generate_user_list()
     while True:
@@ -197,7 +196,10 @@ def login():
             break            
 
     check_if_file_exists("tasks.txt")
-    generate_task_list()
+    try: # an empty task file will return an empty list which causes an error with the spread operator
+        task_list.append(*Task.generate_task_list())
+    except:
+        pass
     return username_input
 
 # Create a new user
@@ -563,4 +565,7 @@ task_list = []
 #------- Run Program
 
 program_user = login()
+#program_user = "admin"
+
 task_select(program_user)
+

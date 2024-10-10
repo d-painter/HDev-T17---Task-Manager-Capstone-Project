@@ -9,6 +9,17 @@ class Task:
     # Set whether a task is overdue to false
     is_overdue = False
 
+    def generate_task_list():
+        """Returns an list of tasks read from tasks.txt.
+        An empty task file returns an empty list.
+        """
+        task_list = []
+        with open("tasks.txt", 'r') as file:
+            for i, task in enumerate(file):
+                task_list.append(Task(*task.split(";")))
+        return task_list
+
+
 
     def __init__(self, task_id, owner, created_by, title, description, date_raised, date_due, is_complete):
         self.task_id = int(task_id)
