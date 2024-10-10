@@ -558,7 +558,6 @@ task_list = []
 #------- Run Program
 
 program_user = login()
-#program_user = "admin"
 
 task_select(program_user)
 
