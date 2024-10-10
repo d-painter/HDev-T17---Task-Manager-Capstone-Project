@@ -6,10 +6,6 @@ DATETIME_STRING_FORMAT = "%Y-%m-%d"
 class Task:
     """Task class"""
 
-    @staticmethod
-    def test_print():
-        return "task test print"
-
     # Set whether a task is overdue to false
     is_overdue = False
 

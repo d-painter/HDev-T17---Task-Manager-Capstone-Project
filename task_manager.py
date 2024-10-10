@@ -22,7 +22,6 @@ from datetime import datetime, date
 
 DATETIME_STRING_FORMAT = "%Y-%m-%d"
 
-print(Task.test_print())
 
 # Create a new task
 def add_task():
