@@ -12,15 +12,22 @@
 
 ### Program Code ###
 
-#=====importing libraries===========#
+# =====importing libraries===========#
 import os
 import sys
 
 from Task import Task
 from User import User
 from datetime import datetime, date
+from files import generate_user_list, generate_task_list
+
+from auth import does_user_exist, login
 
 DATETIME_STRING_FORMAT = "%Y-%m-%d"
+
+# ------- Create a global list placeholders
+user_list = generate_user_list()
+task_list = generate_task_list()
 
 
 # Create a new task
@@ -40,7 +47,7 @@ def add_task():
     # Get task title, description and due date
     title = input("Title of Task: ")
     description = input("Description of Task: ")
-    due_date =  get_date_input("Due date of task")
+    due_date = get_date_input("Due date of task")
 
     # Get new task id. Try statement loop in case no tasks currently exist.
     try:
@@ -49,36 +56,39 @@ def add_task():
         new_task_id = 0
 
     # Append new task to task list and update the task file.
-    task_list.append(Task(new_task_id, owner, program_user, title, description, date.today(), due_date, "No"))
+    task_list.append(Task(new_task_id, owner, program_user,
+                     title, description, date.today(), due_date, "No"))
     update_task_file()
     print("\n-> Task added successfully.")
     return
 
 # Creates upper and lower "===" boundry for reporting based on user name length.
-def boundary(username):
+
+
+def boundary(user):
     # This function is not critical, it is used to calculate output formatting based on username length for 'View Mine' boundaries.
 
-    #--- test case
-    test_inner_lower = f"End of tasks for {username}"
+    # --- test case
+    test_inner_lower = f"End of tasks for {user.username}"
     upper = ""
     lower = ""
 
-    if len(username) >= 14:
+    if len(user.username) >= 14:
         width = 36
         for i in range(width+1):
             upper += "="
             lower += "="
         inner_upper = f"============= User Tasks ============"
         inner_lower = f"========= End of User Tasks ========="
-    
+
     else:
         # boundary length defined by the max length that looked acceptable on the screen.
-        boundary_length = 37    
+        boundary_length = 37
         for i in range(boundary_length):
             upper += "="
             lower += "="
 
-        basic_inner_upper = f" {username} Tasks "      
+        basic_inner_upper = f" {user.username} Tasks "
         outside_upper_len = int((boundary_length - len(basic_inner_upper))/2)
         outside_lower_len = int((boundary_length - len(test_inner_lower))/2)
         outside_upper = ""
@@ -99,42 +109,7 @@ def boundary(username):
 
     return [f"\n{upper}", inner_upper, inner_lower, f"{lower}\n"]
 
-# Check if a file exists
-def check_if_file_exists(file):
-    try:
-        with open(file, "r") as file_to_check:
-            return
-    except FileNotFoundError:
-        if file == "users.txt":
-            with open(file, "w") as user_file:
-                user_file.write("admin;password;0;0")
-        else:
-            with open(file, "w") as new_file:
-                return
 
-# Check if a user exists
-def does_user_exist(user_input, check_type):
-
-    # Type 0, check if any variation of the name exists. Type 1, check if the exact name exits.
-    # Type 0 - Create new user (eg, so only one of Admin, admin, ADMIN can exist)
-    # Type 1 - Log in, create a new task (eg, task can only be assigned to the exact name created. Or, only admin can log in, Admin and ADMIN cannot.)
-
-    if check_type == 0:
-        for user in user_list:
-            if user_input.lower() == user.username.lower():
-                return True
-        return False
-    
-    if check_type == 1:
-        for user in user_list:
-            if user.username == user_input:
-                return [True, user.password]
-        return [False, ""]
-    else:
-        print("-> Error with type declaration inside does_user_exist")
-        return
-
-# Exit function to close program
 def exit_program():
     while True:
         user_input = input("""\nSelect an option:
@@ -149,12 +124,6 @@ def exit_program():
         else:
             sys.exit("\n-> Program closed.\n")
 
-# Generate a list of users
-def generate_user_list():
-    with open("users.txt", 'r') as user_file:
-        for i, user in enumerate(user_file):
-            user_list.append(User(*user.split(";")))
-    return
 
 # Get date input and validate the response
 def get_date_input(message):
@@ -162,38 +131,13 @@ def get_date_input(message):
         try:
             task_due_date = input(f'{message} (YYYY-MM-DD): ')
             # due-date_time is only used to trigger the try loop, datetime is not used or returned in this instance.
-            due_date_time = datetime.strptime(task_due_date, DATETIME_STRING_FORMAT)
+            due_date_time = datetime.strptime(
+                task_due_date, DATETIME_STRING_FORMAT)
             break
         except ValueError:
             print("\n-> Invalid datetime format. Please use the format specified.\n")
     return task_due_date
 
-
-# Handle login process.
-def login():
-    check_if_file_exists("users.txt")
-    generate_user_list()
-    while True:
-        print("\nLOGIN")
-        username_input = input("Username: ")
-        password_input = input("Password: ")
-        user_check = does_user_exist(username_input, 1)
-        if user_check[0] == False:
-            print("\n-> User does not exist.")
-            continue
-        elif password_input != user_check[1]:
-            print("\n-> Incorrect login details, try again.")
-            continue
-        else:
-            print(f'\n-> Successfully logged in as "{username_input}".\n')
-            break            
-
-    check_if_file_exists("tasks.txt")
-    try: # an empty task file will return an empty list which causes an error with the spread operator
-        task_list.append(*Task.generate_task_list())
-    except:
-        pass
-    return username_input
 
 # Create a new user
 def reg_user():
@@ -201,7 +145,7 @@ def reg_user():
     # Request input of a new username
     while True:
         new_username = input("\nNew Username: ")
-        
+
         if does_user_exist(new_username, 0) == True:
             print("\n-> User already exists, please enter a different username.\n")
             continue
@@ -215,17 +159,19 @@ def reg_user():
 
         # Check if the new password and confirmed password are the same.
         if new_password == confirm_password:
-            # write new user to user list and update user file    
-            user_list.append(User(new_username,new_password,0,0))
+            # write new user to user list and update user file
+            user_list.append(User(new_username, new_password, 0, 0))
             update_user_file()
             break
         else:
             print("\n-> Entered passwords do not match, please try again.")
-            continue    
-    print(f'\n\n-> {new_username} added sucessfully.') 
+            continue
+    print(f'\n\n-> {new_username} added sucessfully.')
     return
 
 # Print results to console and create task_overview.txt
+
+
 def task_overview_creation():
     # Get total tasks
     try:
@@ -241,7 +187,7 @@ def task_overview_creation():
             completed_tasks += 1
             continue
         if task.is_overdue == True:
-            overdue_task_qty +=1    
+            overdue_task_qty += 1
     incomplete_tasks = total_tasks - completed_tasks
 
     # Calculate incomplete percentages
@@ -253,7 +199,8 @@ def task_overview_creation():
 
     # Calculate overdue percentage
     try:
-        overdue_percentage = int((overdue_task_qty/(total_tasks-completed_tasks))*100)
+        overdue_percentage = int(
+            (overdue_task_qty/(total_tasks-completed_tasks))*100)
     except ZeroDivisionError:
         overdue_percentage = 0
 
@@ -280,16 +227,24 @@ def task_overview_creation():
         # Create reference file
         with open("task_overview.txt", "w") as task_overview_file:
             task_overview_file.write(f"Task List Overview:\n")
-            task_overview_file.write(f"    Total Tasks:            {total_tasks}\n")
-            task_overview_file.write(f"    Completed tasks:        {completed_tasks}\n")
-            task_overview_file.write(f"    Incomplete Tasks:       {incomplete_tasks}\n")
-            task_overview_file.write(f"    Overdue tasks:          {overdue_task_qty}\n")
+            task_overview_file.write(
+                f"    Total Tasks:            {total_tasks}\n")
+            task_overview_file.write(
+                f"    Completed tasks:        {completed_tasks}\n")
+            task_overview_file.write(
+                f"    Incomplete Tasks:       {incomplete_tasks}\n")
+            task_overview_file.write(
+                f"    Overdue tasks:          {overdue_task_qty}\n")
             task_overview_file.write(f"    Percentage:\n")
-            task_overview_file.write(f"        Incomplete:         {incomplete_percentage}%\n")
-            task_overview_file.write(f"        Remaining, overdue: {overdue_percentage}%\n")
+            task_overview_file.write(
+                f"        Incomplete:         {incomplete_percentage}%\n")
+            task_overview_file.write(
+                f"        Remaining, overdue: {overdue_percentage}%\n")
         return
 
 # Decide what the user wants to do.
+
+
 def task_select(program_user):
     while True:
         task_selected = False
@@ -304,12 +259,12 @@ def task_select(program_user):
                     "vm": " -  View my tasks",
                     "ds": " -  Display statistics",
                     "e": "  -  Exit"}
-                
+
                 print("\nSelect an option:")
                 for option in acceptable_selection:
                     print(f"    {option}{acceptable_selection[option]}")
                 selection = input("    : ")
-            
+
             # options for users other than admin
             else:
                 acceptable_selection = {
@@ -323,7 +278,7 @@ def task_select(program_user):
                     print(f"    {option}{acceptable_selection[option]}")
                 selection = input("    : ")
 
-            # check if input is acceptable           
+            # check if input is acceptable
             if selection not in acceptable_selection:
                 print("\n-> Invalid selection.")
                 continue
@@ -347,10 +302,12 @@ def task_select(program_user):
                 print("=====================================\n")
             case "e":
                 exit_program()
-        
+
         continue
 
 # Update the user file
+
+
 def update_user_file():
     for user in user_list:
         user.task_reset()
@@ -363,13 +320,15 @@ def update_user_file():
                 user.has_overdue_task()
             if task.is_complete == "Yes":
                 user.add_to_complete_count()
-    
+
     with open("users.txt", "w") as user_file:
         for user in user_list:
             user_file.write(user.string_to_file())
     return
 
 # Update the task file
+
+
 def update_task_file():
     with open("tasks.txt", "w") as task_file:
         for task in task_list:
@@ -378,19 +337,23 @@ def update_task_file():
     return
 
 # Print results to console and create user_overview.txt
+
+
 def user_overview_creation():
     # Update the task list and file with the latest updates, checking for overdue tasks
-    # Update the user list and file, populating user task qty and overdue task qty 
+    # Update the user list and file, populating user task qty and overdue task qty
     update_task_file()
     update_user_file()
 
     # Get number of users
     registered_user_qty = 0
-    for user in user_list : registered_user_qty += 1
+    for user in user_list:
+        registered_user_qty += 1
 
     # Get list of users with 0 tasks
-    no_task_list = [user.username for user in user_list if user.tasks_assigned == 0]
-    
+    no_task_list = [
+        user.username for user in user_list if user.tasks_assigned == 0]
+
     # Get number of tasks registered
     try:
         number_of_tasks_created = int(task_list[-1].task_id) + 1
@@ -412,16 +375,21 @@ def user_overview_creation():
     # Create reference file
     with open("user_overview.txt", "w") as user_overview_file:
         user_overview_file.write("General Overview\n")
-        user_overview_file.write(f"    Registered Users:       {registered_user_qty}\n")
-        user_overview_file.write(f"    Tasks Created:          {registered_user_qty}\n")
+        user_overview_file.write(
+            f"    Registered Users:       {registered_user_qty}\n")
+        user_overview_file.write(
+            f"    Tasks Created:          {registered_user_qty}\n")
         for user in user_list:
-                if user.tasks_assigned > 0:
-                    user_overview_file.write(f"{user}\n")
+            if user.tasks_assigned > 0:
+                user_overview_file.write(f"{user}\n")
         for user in no_task_list:
-            user_overview_file.write(f"\n   There are no tasks allocated to {user}.")
+            user_overview_file.write(
+                f"\n   There are no tasks allocated to {user}.")
     return
 
 # Start of edit process selection.
+
+
 def user_task_options():
     # Present the user the option edit a task or return to the main menu
     # Checks - make sure id exists
@@ -457,8 +425,8 @@ Enter '-1' to return the main menu.\n:"""))
             continue
         else:
             break
-    
-    #===== User entered a valid ID to make a task update =====
+
+    # ===== User entered a valid ID to make a task update =====
     # 1 - Mark as complete
     # 5 - Edit and re assign
     # 9 - Edit and change due date
@@ -475,13 +443,13 @@ Enter '-1' to return the main menu.\n:"""))
         else:
             print("\n-> Incorrect selection, please try again.")
 
-    #--- 1 - Mark as complete
+    # --- 1 - Mark as complete
     if selection == "1":
         task.mark_task_complete()
         update_task_file()
         return
 
-    #--- 5 - Re assign the task  
+    # --- 5 - Re assign the task
     if selection == "5":
         while True:
             # Get new user name
@@ -494,9 +462,9 @@ Enter '-1' to return the main menu.\n:"""))
                 return
             else:
                 print("\n-> Invalid user, please try again.")
-                continue  
-    
-    #--- 9 - Update task due date
+                continue
+
+    # --- 9 - Update task due date
     if selection == "9":
         new_date = get_date_input("\nEnter the updated date")
         task.update_due_date(new_date)
@@ -504,6 +472,8 @@ Enter '-1' to return the main menu.\n:"""))
         return
 
 # View all of the tasks
+
+
 def view_all():
     if task_list == []:
         print('\n==================================\n')
@@ -515,16 +485,18 @@ def view_all():
         # Loops though task list to print all tasks.
         print('\n======================================')
         print("========= Start of Task List =========\n")
-        
+
         for task in task_list:
             print(f"\n{task}\n")
         print("\n========== End of Task List ==========")
-        print('======================================\n')  
+        print('======================================\n')
         return
 
 # Show user tasks
+
+
 def view_mine(user):
-    
+
     # Boundary function generates custom length headers and footers based on username length.
     boundaries = boundary(user)
     print(f"\n{boundaries[0]}")
@@ -548,16 +520,10 @@ def view_mine(user):
 
     # Present user with options to edit or update tasks
     user_task_options()
-    return 
+    return
 
 
-#------- Create a global list placeholders
-user_list = []
-task_list = []
-
-#------- Run Program
-
-program_user = login()
+# ------- Run Program
+program_user = login(user_list)
 
 task_select(program_user)
-

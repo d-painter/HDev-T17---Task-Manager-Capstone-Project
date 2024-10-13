@@ -9,18 +9,6 @@ class Task:
     # Set whether a task is overdue to false
     is_overdue = False
 
-    def generate_task_list():
-        """Returns an list of tasks read from tasks.txt.
-        An empty task file returns an empty list.
-        """
-        task_list = []
-        with open("tasks.txt", 'r') as file:
-            for i, task in enumerate(file):
-                task_list.append(Task(*task.split(";")))
-        return task_list
-
-
-
     def __init__(self, task_id, owner, created_by, title, description, date_raised, date_due, is_complete):
         self.task_id = int(task_id)
         self.owner = owner
@@ -45,14 +33,15 @@ Task Description:
 
     # Determine if a task is overdue
     def is_task_overdue(self):
-        due_date_time = datetime.strptime(self.date_due, DATETIME_STRING_FORMAT)
+        due_date_time = datetime.strptime(
+            self.date_due, DATETIME_STRING_FORMAT)
         current_date_time = datetime.today()
         if self.is_complete == "Yes":
             return
         if current_date_time > due_date_time:
-            self.is_overdue = True        
+            self.is_overdue = True
             return
-    
+
     # Mark a task complete
     def mark_task_complete(self):
         if self.is_complete == "No":
@@ -63,7 +52,7 @@ Task Description:
             print("\nError marking task complete, task is already complete.\n")
             return
 
-    # Reassign a task    
+    # Reassign a task
     def reassign_task(self, new_owner):
         self.owner = new_owner
         print(f"\n-> Task {self.task_id} has been reassigned to {new_owner}.")
@@ -71,12 +60,10 @@ Task Description:
 
     # Create a string to write to a file
     def string_to_file(self):
-        return f"{self.task_id};{self.owner};{self.created_by};{self.title};{self.description};{self.date_raised};{self.date_due};{self.is_complete}\n"  
-    
+        return f"{self.task_id};{self.owner};{self.created_by};{self.title};{self.description};{self.date_raised};{self.date_due};{self.is_complete}\n"
+
     # Update a task due date
     def update_due_date(self, new_due_date):
         self.date_due = new_due_date
         print(f"\n-> Due date updated to {new_due_date}.")
         return
-
-    
