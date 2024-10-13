@@ -37,7 +37,7 @@ def add_task():
         owner = input("\nName of person assigned to task: ")
         if owner == str(-1):
             return
-        elif does_user_exist(owner, 1)[0] == False:
+        elif does_user_exist(owner, 1, user_list)[0] == False:
             print("\n-> User does not exist.\n")
             print("Please enter a valid username or '-1' to return to the menu.\n")
             continue
@@ -247,7 +247,7 @@ def task_select(program_user):
         while task_selected == False:
             # if statement to control the acceptable options based on user type.
             # admin includes display statistic option
-            if program_user == "admin":
+            if program_user.username == "admin":
                 acceptable_selection = {
                     "r": "  -  Register a user",
                     "a": "  -  Add a task",
@@ -448,7 +448,7 @@ Enter '-1' to return the main menu.\n:"""))
             # Get new user name
             # Check user exists
             new_owner = input("\nEnter the new task owners username: ")
-            is_user_valid = does_user_exist(new_owner, 1)[0]
+            is_user_valid = does_user_exist(new_owner, 1, user_list)[0]
             if is_user_valid == True:
                 task.reassign_task(new_owner)
                 update_task_file()
