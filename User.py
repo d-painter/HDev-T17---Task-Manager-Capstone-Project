@@ -24,14 +24,14 @@ class User:
 
     # Adds 1 tasks complete count
     def add_to_complete_count(self):
-        self.tasks_complete +=1
+        self.tasks_complete += 1
         return
-    
+
     # Adds 1 to the tasks assigned count
     def add_to_task_count(self):
         self.tasks_assigned += 1
         return
-    
+
     # Adds 1 if a task is overdue
     def has_overdue_task(self):
         self.tasks_overdue += 1
@@ -54,7 +54,7 @@ class User:
     # Create a string to write to a file
     def string_to_file(self):
         return f"{self.username};{self.password};{self.tasks_assigned};{self.tasks_overdue}\n"
-    
+
     # Resets user data before metrics are updated from the task file
     def task_reset(self):
         self.tasks_assigned = 0
