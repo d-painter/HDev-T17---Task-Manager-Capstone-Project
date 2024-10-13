@@ -25,7 +25,7 @@ from auth import does_user_exist, login
 
 DATETIME_STRING_FORMAT = "%Y-%m-%d"
 
-# ------- Create a global list placeholders
+# ------- Create a global user and task lists
 user_list = generate_user_list()
 task_list = generate_task_list()
 
