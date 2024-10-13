@@ -144,7 +144,7 @@ def reg_user():
     while True:
         new_username = input("\nNew Username: ")
 
-        if does_user_exist(new_username, 0) == True:
+        if does_user_exist(new_username, 0, user_list) == True:
             print("\n-> User already exists, please enter a different username.\n")
             continue
         else:
