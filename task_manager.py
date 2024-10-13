@@ -30,8 +30,8 @@ user_list = generate_user_list()
 task_list = generate_task_list()
 
 
-# Create a new task
 def add_task():
+    """Create a new task"""
     # Assign task
     while True:
         owner = input("\nName of person assigned to task: ")
@@ -62,11 +62,9 @@ def add_task():
     print("\n-> Task added successfully.")
     return
 
-# Creates upper and lower "===" boundry for reporting based on user name length.
-
 
 def boundary(user):
-    # This function is not critical, it is used to calculate output formatting based on username length for 'View Mine' boundaries.
+    """Creates upper and lower "===" boundry for reporting based on user name length. """
 
     # --- test case
     test_inner_lower = f"End of tasks for {user.username}"
@@ -125,8 +123,8 @@ def exit_program():
             sys.exit("\n-> Program closed.\n")
 
 
-# Get date input and validate the response
 def get_date_input(message):
+    """Get a date input from the user and valide the input."""
     while True:
         try:
             task_due_date = input(f'{message} (YYYY-MM-DD): ')
@@ -139,8 +137,8 @@ def get_date_input(message):
     return task_due_date
 
 
-# Create a new user
 def reg_user():
+    """Create a new user"""
 
     # Request input of a new username
     while True:
@@ -169,10 +167,9 @@ def reg_user():
     print(f'\n\n-> {new_username} added sucessfully.')
     return
 
-# Print results to console and create task_overview.txt
-
 
 def task_overview_creation():
+    """Creates an overview of the task list and creates task_overview.txt"""
     # Get total tasks
     try:
         total_tasks = int(task_list[-1].task_id) + 1
@@ -242,10 +239,9 @@ def task_overview_creation():
                 f"        Remaining, overdue: {overdue_percentage}%\n")
         return
 
-# Decide what the user wants to do.
-
 
 def task_select(program_user):
+    """Main menu for task selection."""
     while True:
         task_selected = False
         while task_selected == False:
@@ -305,10 +301,9 @@ def task_select(program_user):
 
         continue
 
-# Update the user file
-
 
 def update_user_file():
+    """Updates the user file."""
     for user in user_list:
         user.task_reset()
         for task in task_list:
@@ -326,20 +321,18 @@ def update_user_file():
             user_file.write(user.string_to_file())
     return
 
-# Update the task file
-
 
 def update_task_file():
+    """Updates the task file."""
     with open("tasks.txt", "w") as task_file:
         for task in task_list:
             task.is_task_overdue()
             task_file.write(task.string_to_file())
     return
 
-# Print results to console and create user_overview.txt
-
 
 def user_overview_creation():
+    """Creates the user overview, prints the results and creates user_overview.txt."""
     # Update the task list and file with the latest updates, checking for overdue tasks
     # Update the user list and file, populating user task qty and overdue task qty
     update_task_file()
@@ -387,14 +380,14 @@ def user_overview_creation():
                 f"\n   There are no tasks allocated to {user}.")
     return
 
-# Start of edit process selection.
-
 
 def user_task_options():
-    # Present the user the option edit a task or return to the main menu
-    # Checks - make sure id exists
-    #        - user owns task
-    #        - task is not complete
+    """Presents the user the option to edit a task or return to the main menu.\n
+    Checks:
+    - make sure the Task ID exists
+    - the logged in user owns the task
+    - the task is not already complete"""
+
     while True:
         try:
             id_selection = int(input("""Enter the Task ID to make an update.
@@ -471,10 +464,9 @@ Enter '-1' to return the main menu.\n:"""))
         update_task_file()
         return
 
-# View all of the tasks
-
 
 def view_all():
+    """Prints all tasks"""
     if task_list == []:
         print('\n==================================\n')
         print("There are no tasks logged.")
@@ -492,10 +484,9 @@ def view_all():
         print('======================================\n')
         return
 
-# Show user tasks
-
 
 def view_mine(user):
+    """Prints tasks belonging to the user."""
 
     # Boundary function generates custom length headers and footers based on username length.
     boundaries = boundary(user)
