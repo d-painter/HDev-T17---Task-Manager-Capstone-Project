@@ -15,6 +15,7 @@
 # =====importing libraries===========#
 import os
 import sys
+import inspect
 
 from Task import Task
 from User import User
@@ -37,7 +38,7 @@ def add_task():
         owner = input("\nName of person assigned to task: ")
         if owner == str(-1):
             return
-        elif does_user_exist(owner, 1, user_list)[0] == False:
+        elif does_user_exist(owner, 1, user_list) == False:
             print("\n-> User does not exist.\n")
             print("Please enter a valid username or '-1' to return to the menu.\n")
             continue
@@ -56,8 +57,8 @@ def add_task():
         new_task_id = 0
 
     # Append new task to task list and update the task file.
-    task_list.append(Task(new_task_id, owner, program_user,
-                     title, description, date.today(), due_date, "No"))
+    task_list.append(Task(new_task_id, owner, program_user.username,
+                          title, description, date.today(), due_date, "No"))
     update_task_file()
     print("\n-> Task added successfully.")
     return
@@ -410,7 +411,7 @@ Enter '-1' to return the main menu.\n:"""))
         if task_exists == False:
             print("\n-> Task ID does not exist, please try again.\n")
             continue
-        elif task.owner != program_user:
+        elif task.owner != program_user.username:
             print("\n-> Task not owned by user, please select another option.\n")
             continue
         elif task.is_complete == "Yes":
@@ -448,8 +449,9 @@ Enter '-1' to return the main menu.\n:"""))
             # Get new user name
             # Check user exists
             new_owner = input("\nEnter the new task owners username: ")
-            is_user_valid = does_user_exist(new_owner, 1, user_list)[0]
-            if is_user_valid == True:
+            is_user_valid = does_user_exist(new_owner, 1, user_list)
+
+            if isinstance(is_user_valid, User) == True:
                 task.reassign_task(new_owner)
                 update_task_file()
                 return
@@ -496,7 +498,7 @@ def view_mine(user):
     # Loop through task list and print any tasks owned by the logged in user
     user_has_tasks = False
     for task in task_list:
-        if task.owner == user:
+        if task.owner == user.username:
             user_has_tasks = True
             print(f"\n{task}\n")
     if user_has_tasks == False:

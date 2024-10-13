@@ -63,6 +63,7 @@ Task Description:
         return f"{self.task_id};{self.owner};{self.created_by};{self.title};{self.description};{self.date_raised};{self.date_due};{self.is_complete}\n"
 
     # Update a task due date
+
     def update_due_date(self, new_due_date):
         self.date_due = new_due_date
         print(f"\n-> Due date updated to {new_due_date}.")
